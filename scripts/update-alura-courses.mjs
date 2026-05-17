@@ -36,6 +36,7 @@ async function loadEnv() {
 await loadEnv();
 
 const ALURA_API_URL = process.env.ALURA_API_URL;
+const ALURA_USERNAME = process.env.ALURA_USERNAME;
 
 if (!ALURA_API_URL) {
   console.error('Erro: ALURA_API_URL não configurada no .env');
@@ -56,11 +57,11 @@ async function main() {
 
   const data = await response.json();
 
-  //console.log('courseProgresses existe?', Array.isArray(data.courseProgresses));
-  //console.log('Quantidade em courseProgresses:', data.courseProgresses?.length);
+  console.log('courseProgresses existe?', Array.isArray(data.courseProgresses));
+  console.log('Quantidade em courseProgresses:', data.courseProgresses?.length);
 
-  //console.log('Primeiro curso:');
-  //console.log(data.courseProgresses?.[0]);
+  console.log('Primeiro curso:');
+  console.log(data.courseProgresses?.[0]);
 
   const courses = (data.courseProgresses || [])
     .filter((course) => course.finished === true || course.progress === 100)
@@ -72,6 +73,7 @@ async function main() {
       finished: course.finished,
       platform: 'Alura',
       courseUrl: `https://www.alura.com.br/curso-online-${course.slug}`,
+      certificateUrl: `https://cursos.alura.com.br/user/${ALURA_USERNAME}/course/${course.slug}/certificate`,
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
