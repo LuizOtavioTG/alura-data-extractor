@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "update:alura": "node scripts/update-alura-courses.mjs",
+    "build": "ng build"
+  }
+}
