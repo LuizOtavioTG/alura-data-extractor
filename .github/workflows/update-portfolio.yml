@@ -1,0 +1,43 @@
+name: Atualizar dados da Alura no portfolio
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"
+
+jobs:
+  update-portfolio:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar alura-data-extractor
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rodar extractor da Alura
+        env:
+          ALURA_API_URL: ${{ secrets.ALURA_API_URL }}
+          ALURA_USERNAME: ${{ secrets.ALURA_USERNAME }}
+        run: npm run update:alura
+
+      - name: Clonar portfolio
+        run: |
+          git clone https://x-access-token:${{ secrets.PORTFOLIO_TOKEN }}@github.com/LuizOtavioTG/portfolio.git portfolio
+
+      - name: Copiar JSON para o portfolio
+        run: |
+          mkdir -p portfolio/src/assets/data
+          cp src/assets/data/alura-courses.json portfolio/src/assets/data/alura-courses.json
+
+      - name: Commitar e enviar mudanças para o portfolio
+        run: |
+          cd portfolio
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add src/assets/data/alura-courses.json
+          git commit -m "Atualiza cursos da Alura" || echo "Sem alterações para commit"
+          git push origin main
